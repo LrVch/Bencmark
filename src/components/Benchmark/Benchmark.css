@@ -1,0 +1,31 @@
+.benchmark {
+  font-size: 0;
+  height: 300px;
+}
+
+.branchmark__bar {
+  font-size: 15px;
+  display: inline-block;
+  vertical-align: bottom;
+  background: red;
+  width: 50px;
+}
+
+.branchmark__message {
+  font-size: 15px;
+  padding: 20px;
+  border: 1px solid #fff;
+  border-radius: 4px;
+}
+
+.branchmark__message.warning {
+  border-color: #f5c6cb;
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.branchmark__message.green {
+  color: #155724;
+  background-color: #d4edda;
+  border-color: #c3e6cb;
+}

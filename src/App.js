@@ -1,24 +1,37 @@
-import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import './line/line'
+
+import { getAsymmetricArr, getSymmetricArr } from './line/utils'
+
+import Benchmark from './components/Benchmark/Benchmark';
+import React from 'react';
+import { findLine } from './line/line'
+
+/* 
+  Switch between functions and pass options
+  Save resutl globally
+*/
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Benchmark
+        loops={1000}
+        inRow={1000}
+        printToConsole={true}
+        functions={[findLine]}
+        args={[getSymmetricArr(14).result]}
+        iteration="5"
+      />
+
+      {/* <Benchmark
+        loops={1000}
+        inRow={1000}
+        printToConsole={true}
+        functions={[findLine]}
+        args={[getAsymmetricArr(4)]}
+        iteration="5"
+      /> */}
     </div>
   );
 }
