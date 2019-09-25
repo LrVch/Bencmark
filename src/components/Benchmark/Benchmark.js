@@ -30,7 +30,7 @@ const Benchmark = ({
     printToConsole
   )
 
-  console.log('items', items)
+  // console.log('items', items)
 
   const printStart = () => {
     console.log('='.repeat(30))

@@ -76,20 +76,6 @@ export function createItems(
           + " / persent " + done.persent
         )
       },
-      // render: function () {
-      //   let bar = this.createView();
-      //   bar.style.height = this.time / 10 + "px";
-      //   bar.style.background = COLORS.body[this.serial];
-
-      //   container.appendChild(bar);
-      // },
-      // createView: function () {
-      //   let bar = document.createElement("div");
-      //   bar.className = "branchmark__bar";
-      //   bar.innerHTML = this.time;
-
-      //   return bar;
-      // }
     });
   }
 
