@@ -1,16 +1,10 @@
 import './Benchmark.css'
 
-import React from 'react'
-import { createItems } from './utils'
+import { Button, Message } from 'semantic-ui-react'
+import React, { useEffect, useState } from 'react'
+import { createDataSet, createItems, printDone, printStart } from './utils'
 
-const COLORS = {
-  border: "#f0f",
-  body: ["#f00", "#0ff"]
-};
-
-const DIMENTIONS = {
-  width: 50
-};
+import { Bar } from 'react-chartjs-2'
 
 const Benchmark = ({
   args,
@@ -19,8 +13,21 @@ const Benchmark = ({
   inRow = 1000,
   iteration = 1,
   loops = 100,
-  printToConsole = false
+  printToConsole = false,
+  onStart = () => { },
+  onEnd = () => { }
 } = {}) => {
+
+  const [state, setState] = useState({
+    inProgress: false,
+    result: null
+  })
+
+  const { inProgress, result } = state
+
+  useEffect(() => {
+    result && console.log('result', result)
+  }, [result])
 
   const items = createItems(
     functions,
@@ -30,20 +37,35 @@ const Benchmark = ({
     printToConsole
   )
 
-  // console.log('items', items)
-
-  const printStart = () => {
-    console.log('='.repeat(30))
-    console.log(`Start Benchmark ${new Date().toLocaleString()}`)
-    console.log(`Settings: inRow - ${inRow}, loops - ${loops}, iteration - ${iteration}`)
-    console.log('='.repeat(30))
+  const handleOnStart = () => {
+    onStart()
+    setResult(null)
+    printToConsole && printStart(inRow, loops, iteration)
+    setState(prevState => {
+      return {
+        ...prevState,
+        inProgress: true,
+      };
+    });
   }
 
-  function printDone(items) {
-    console.log('='.repeat(30))
-    console.log(`End Benchmark ${new Date().toLocaleString()}`);
-    console.log('='.repeat(30))
-    items.forEach((item) => item.printDone());
+  const handleOnEnd = () => {
+    onEnd()
+    printToConsole && printDone(items)
+    setState(prevState => {
+      return {
+        ...prevState,
+        inProgress: false,
+        result: createDataSet(items)
+      };
+    });
+  }
+
+  const setResult = result => {
+    setState(prevState => ({
+      ...prevState,
+      result
+    }))
   }
 
   const start = () => {
@@ -52,34 +74,58 @@ const Benchmark = ({
     }
   }
 
-  printToConsole && printStart()
+  const startBench = () => {
+    handleOnStart()
 
-  start()
+    setTimeout(start, 0);
 
-  if (iteration > 1) {
-    iteration--;
-    setTimeout(function time() {
-      start();
-      iteration--;
-      if (iteration > 0) {
-        setTimeout(time, delay)
+    setTimeout(() => {
+      if (iteration > 1) {
+        iteration--;
+        setTimeout(function time() {
+          start();
+          iteration--;
+          if (iteration > 0) {
+            setTimeout(time, delay)
+          } else {
+            handleOnEnd()
+          }
+        }, delay);
       } else {
-        printToConsole && printDone(items);
+        handleOnEnd()
       }
-    }, delay);
-  } else {
-    printToConsole && printDone(items);
+    }, 100)
   }
-
-  // console.log('functions', functions)
-  // console.log('args', args)
 
   return (
     <div>
-      <div className="benchmark">
+      <div>
         {(functions === undefined || functions.length === 0) && <div className="branchmark__message warning">
           there is not functions yet
         </div>}
+
+        <Button
+          loading={inProgress}
+          disabled={inProgress}
+          onClick={startBench}
+        >Start</Button>
+
+        {result &&
+          result.map((data, i) =>
+            <Bar
+              key={i}
+              data={data}
+              width={100}
+              height={50}
+            />
+          )}
+
+        {!result && !inProgress &&
+          <Message>
+            <p>
+              No result yet.
+            </p>
+          </Message>}
       </div>
     </div>
   )

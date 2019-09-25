@@ -1,7 +1,7 @@
 export function bench(f, inRow, loops) {
   return function () {
     const results = []
-    let start = Date.now();
+    const start = Date.now();
 
     for (let i = 0; i < loops; i++) {
       for (let i = 0; i < inRow; i++) {
@@ -33,13 +33,18 @@ export function createItems(
       count: [],
       results: [],
       serial: i,
-      run: function () {
-        const {time, results} = this.func(args)
+      run: function (cb) {
+        const { time, results } = this.func(args)
 
         this.time = time;
         this.count.push(time);
         this.results = results
         printToConsole && this.print();
+        cb && cb({
+          time,
+          name: this.name,
+          results
+        })
       },
       print: function () {
         console.log(`Function "${this.name}" - time: ${this.time} ms`);
@@ -80,4 +85,35 @@ export function createItems(
   }
 
   return items
+}
+
+export const printStart = (inRow, loops, iteration) => {
+  console.log('='.repeat(30))
+  console.log(`Start Benchmark ${new Date().toLocaleString()}`)
+  console.log(`Settings: inRow - ${inRow}, loops - ${loops}, iteration - ${iteration}`)
+  console.log('='.repeat(30))
+}
+
+export const printDone = (items) => {
+  console.log('='.repeat(30))
+  console.log(`End Benchmark ${new Date().toLocaleString()}`);
+  console.log('='.repeat(30))
+  items.forEach((item) => item.printDone());
+}
+
+export const createDataSet = items => {
+  return items.map(item => ({
+    labels: Array.from({ length: item.count.length }).map((e, i) => i),
+    datasets: [
+      {
+        label: item.name,
+        backgroundColor: 'rgba(255,99,132,0.2)',
+        borderColor: 'rgba(255,99,132,1)',
+        borderWidth: 1,
+        hoverBackgroundColor: 'rgba(255,99,132,0.4)',
+        hoverBorderColor: 'rgba(255,99,132,1)',
+        data: item.count
+      }
+    ]
+  }))
 }

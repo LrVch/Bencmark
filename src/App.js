@@ -1,10 +1,12 @@
 import './App.css';
 import './line/line'
 
+import { Button, Container } from 'semantic-ui-react';
+import React, { useCallback, useState } from 'react';
 import { getAsymmetricArr, getSymmetricArr } from './line/utils'
 
 import Benchmark from './components/Benchmark/Benchmark';
-import React from 'react';
+import ControlPanel from './components/ControlPanel/ControlPanel';
 import { findLine } from './line/line'
 
 /* 
@@ -13,25 +15,63 @@ import { findLine } from './line/line'
 */
 
 function App() {
+  const [panelState, setPanelState] = useState({
+    delay: 500,
+    inRow: 1000,
+    loops: 100,
+    iteration: 1,
+    printToConsole: true,
+    disabled: false
+  })
+
+  const { delay, inRow, loops, iteration, printToConsole } = panelState
+
+  const handleChangePanelState = (name, value) => {
+    setPanelState(state => {
+      return {
+        ...state,
+        [name]: value
+      }
+    })
+  }
+
+  const handleOnStart = () => {
+    setPanelState(state => ({
+      ...state,
+      disabled: true
+    }))
+  }
+
+  const handleOnEnd = () => {
+    setPanelState(state => ({
+      ...state,
+      disabled: false
+    }))
+  }
+
   return (
     <div>
-      <Benchmark
-        loops={1000}
-        inRow={1000}
-        printToConsole={true}
-        functions={[findLine]}
-        args={[getSymmetricArr(14).result]}
-        iteration="5"
-      />
+      <Container>
+        <ControlPanel
+          onChange={handleChangePanelState}
+          state={panelState}
+        />
 
-      {/* <Benchmark
-        loops={1000}
-        inRow={1000}
-        printToConsole={true}
-        functions={[findLine]}
-        args={[getAsymmetricArr(4)]}
-        iteration="5"
-      /> */}
+        <br />
+
+        <Benchmark
+          onStart={handleOnStart}
+          onEnd={handleOnEnd}
+          functions={[findLine, findLine]}
+          args={[getSymmetricArr(14).result]}
+
+          printToConsole={printToConsole}
+          loops={loops}
+          inRow={inRow}
+          iteration={iteration}
+          delay={delay}
+        />
+      </Container>
     </div>
   );
 }
