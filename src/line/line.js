@@ -5,7 +5,7 @@
 // const sourceNotSimetredEven = [-10, -5, 5, 11];
 // const sourceNotSimetredOdd = [22, -10, -5, 0, 5, 11, 13];
 
-export const findLine = (arr = []) => {
+export function findLine(arr = []) {
   const sorted = arr.slice().sort((a, b) => a - b);
   const arrLength = sorted.length;
   const isOdd = arrLength % 2 !== 0;
@@ -42,6 +42,9 @@ export const findLine = (arr = []) => {
     arr
   };
 };
+
+findLine.sourceName = 'findLine'
+
 // console.log(findLine([-6, 0, 4, 8, 14]));
 // console.log(findLine([1, 2, 4]));
 // console.log(findLine([-2, 7, 16]));

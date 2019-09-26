@@ -26,8 +26,9 @@ export function createItems(
 ) {
   const items = []
   for (let i = 0; i < functions.length; i++) {
+    // console.log('fun',functions[i].sourceName )
     items.push({
-      name: functions[i].name,
+      name: functions[i].sourceName,
       func: bench(functions[i], inRow, loops),
       time: 0,
       count: [],
@@ -105,7 +106,7 @@ export const printDone = (items) => {
 
 export const createDataSet = items => {
   return items.map(item => ({
-    labels: Array.from({ length: item.count.length }).map((e, i) => i),
+    labels: Array.from({ length: item.count.length }).map((e, i) => i + 1),
     datasets: [
       {
         label: item.name,
