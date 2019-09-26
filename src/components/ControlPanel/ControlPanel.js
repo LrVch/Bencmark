@@ -72,8 +72,8 @@ const ControlPanel = ({
     onArgsChange(res)
   }
 
-  const handleSymetricArrChange = length => {
-    const args = getSymmetricArr(length).result
+  const handleGenArrChange = (length, type) => {
+    const args = type === 'symetric' ? getSymmetricArr(length).result : getAsymmetricArr(length)
     const {error, valid} = validate(schema, args)
     setArgsArra(args)
     onValidArgs(valid)
@@ -81,14 +81,14 @@ const ControlPanel = ({
     setArrayError(error)
   }
 
-  const handleASymetricArrChange = length => {
-    const args = getAsymmetricArr(length)
-    const {error, valid} = validate(schema, args)
-    setArgsArra(args)
-    onValidArgs(valid)
-    onArgsChange(args)
-    setArrayError(error)
-  }
+  // const handleASymetricArrChange = length => {
+  //   const args = getAsymmetricArr(length)
+  //   const {error, valid} = validate(schema, args)
+  //   setArgsArra(args)
+  //   onValidArgs(valid)
+  //   onArgsChange(args)
+  //   setArrayError(error)
+  // }
   useEffect(() => {
     const {error, valid} = validate(schema, argsArray)
     onArgsChange(argsArray)
@@ -186,7 +186,7 @@ const ControlPanel = ({
         /> {' '} {' '}
         <Button
           disabled={disabled}
-          onClick={handleSymetricArrChange.bind(null, symetricLength)}
+          onClick={handleGenArrChange.bind(null, symetricLength, 'symetric')}
         >Gen symetric array</Button>
         <br />
         <br />
@@ -200,7 +200,7 @@ const ControlPanel = ({
         /> {' '}{' '}
         <Button
           disabled={disabled}
-          onClick={handleASymetricArrChange.bind(null, asymetricLength)}
+          onClick={handleGenArrChange.bind(null, asymetricLength, 'asymetric')}
         >Gen asymetric array</Button>
       </div>
     </div>
