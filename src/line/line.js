@@ -5,7 +5,7 @@
 // const sourceNotSimetredEven = [-10, -5, 5, 11];
 // const sourceNotSimetredOdd = [22, -10, -5, 0, 5, 11, 13];
 
-export function findLine(arr = []) {
+export const findLine = (arr = []) => {
   const sorted = arr.slice().sort((a, b) => a - b);
   const arrLength = sorted.length;
   const isOdd = arrLength % 2 !== 0;
@@ -44,6 +44,46 @@ export function findLine(arr = []) {
 };
 
 findLine.sourceName = 'findLine'
+
+export const findLine2 = (arr = []) => {
+  const sorted = arr.slice().sort((a, b) => a - b);
+  const arrLength = sorted.length;
+  const isOdd = arrLength % 2 !== 0;
+  // console.log("sorted", sorted);
+  const sliceLength = isOdd ? (arrLength - 1) / 2 : arrLength / 2;
+  const leftSlice = sorted.slice(0, sliceLength).reverse();
+  const rightSlice = sorted.slice(isOdd ? sliceLength + 1 : sliceLength);
+  const oddElement = isOdd ? sorted[sliceLength] : null;
+  const center = (rightSlice[0] - leftSlice[0]) / 2 + leftSlice[0];
+  const isOddMatchCenter = oddElement === center;
+  
+  const res = rightSlice
+  .map((elem, index) => {
+    return Math.abs(center - elem) === Math.abs(leftSlice[index] - center);
+  })
+  .every(elem => !!elem);
+  
+  // console.log("leftSlice", leftSlice);
+  // console.log("rightSlice", rightSlice);
+  // console.log("oddElement", oddElement);
+  // console.log("center", center);
+  // console.log("res", res);
+  // console.log("===".repeat(20));
+
+  // const res = res.every(elem => !!elem)
+  const result = isOdd ? (isOddMatchCenter ? res : false) : res;
+
+  return {
+    center,
+    isOdd,
+    oddElement,
+    isOddMatchCenter: isOdd ? isOddMatchCenter : null,
+    result,
+    arr
+  };
+};
+
+findLine2.sourceName = 'findLine2'
 
 // console.log(findLine([-6, 0, 4, 8, 14]));
 // console.log(findLine([1, 2, 4]));

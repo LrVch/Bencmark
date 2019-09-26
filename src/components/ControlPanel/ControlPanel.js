@@ -1,11 +1,16 @@
 import * as yup from 'yup'
 
-import { Button, Checkbox, Form, Header, Input, Message } from 'semantic-ui-react'
+import { Button, Checkbox, Dropdown, Form, Header, Input, Message } from 'semantic-ui-react'
 import React, { useEffect, useState } from 'react'
 import { getAsymmetricArr, getSymmetricArr } from '../../line/utils'
 
-const schema = yup.array()
-  .of(yup.number().min(-100).max(100).integer())
+const createFunOptions = funs =>
+  funs.map(fn => ({
+    key: fn.id, text: fn.name, value: `${fn.id}:${fn.type}`
+  }))
+
+// const schema = yup.array()
+//   .of(yup.number().min(-100).max(100).integer())
 
 const ControlPanel = ({
   state: {
@@ -15,12 +20,16 @@ const ControlPanel = ({
     iteration,
     printToConsole,
     disabled,
-    initialArgs
+    initialArgs,
+    functions,
+    schemaValidator: schema
   },
+  onChangeFunctions,
   onValidArgs,
   onArgsChange,
   onChange
 }) => {
+  const fnOptions = createFunOptions(functions)
   const handleChangeInput = ({ target: { name, value } }) => {
     onChange(name, Number(value))
   }
@@ -33,6 +42,7 @@ const ControlPanel = ({
   const [asymetricLength, setASymetricLength] = useState(10)
   const [argsArray, setArgsArra] = useState(initialArgs)
   const [arrayError, setArrayError] = useState('')
+  const [funsIds, setFunsIds] = useState([])
 
   const handleSymetricLength = ({ target: { value } }) => {
     setSymetricLength(state => Number(value))
@@ -63,7 +73,7 @@ const ControlPanel = ({
       .map(v => v.trim())
       .map(v => v ? !isNaN(v) ? Number(v.trim()) : v : v)
 
-    const {error, valid} = validate(schema, res)
+    const { error, valid } = validate(schema, res)
 
     setArrayError(error)
     onValidArgs(valid)
@@ -74,23 +84,20 @@ const ControlPanel = ({
 
   const handleGenArrChange = (length, type) => {
     const args = type === 'symetric' ? getSymmetricArr(length).result : getAsymmetricArr(length)
-    const {error, valid} = validate(schema, args)
+    const { error, valid } = validate(schema, args)
     setArgsArra(args)
     onValidArgs(valid)
     onArgsChange(args)
     setArrayError(error)
   }
 
-  // const handleASymetricArrChange = length => {
-  //   const args = getAsymmetricArr(length)
-  //   const {error, valid} = validate(schema, args)
-  //   setArgsArra(args)
-  //   onValidArgs(valid)
-  //   onArgsChange(args)
-  //   setArrayError(error)
-  // }
+  const handleChangeFunctions = ids => {
+    onChangeFunctions(ids)
+    setFunsIds(_ => ids)
+  }
+
   useEffect(() => {
-    const {error, valid} = validate(schema, argsArray)
+    const { error, valid } = validate(schema, argsArray)
     onArgsChange(argsArray)
     onValidArgs(valid)
     setArrayError(error)
@@ -159,8 +166,21 @@ const ControlPanel = ({
         </Form.Field>
       </Form>
 
+      <br />
       <div>
-        <br />
+        <Header as='h3'>Functions</Header>
+        <Dropdown
+          onChange={(e, d) => handleChangeFunctions(d.value)}
+          placeholder='Functions'
+          fluid multiple selection options={fnOptions}
+        />
+        <br/>
+        {!funsIds.length && <div className="branchmark__message warning">
+          There is not functions yet
+        </div>}
+      </div>
+      <br />
+      <div>
         <Header as='h3'>Arguments</Header>
         <Input
           error={!!arrayError}

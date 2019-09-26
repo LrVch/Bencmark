@@ -5,6 +5,8 @@ import React, { useEffect, useState } from 'react'
 import { createDataSet, createItems, printDone, printStart } from './utils'
 
 import { Bar } from 'react-chartjs-2'
+import Comparision from '../Comparision/Comparision'
+import Result from '../Result/Result'
 
 const Benchmark = ({
   args,
@@ -113,10 +115,6 @@ const Benchmark = ({
   return (
     <div>
       <div>
-        {(functions === undefined || functions.length === 0) && <div className="branchmark__message warning">
-          there is not functions yet
-        </div>}
-
         <Button
           loading={inProgress}
           disabled={inProgress || disable}
@@ -125,13 +123,19 @@ const Benchmark = ({
 
         {result &&
           result.map((data, i) =>
-            <Bar
-              key={i}
-              data={data}
-              width={100}
-              height={50}
-            />
+            <div key={i}>
+              <Bar
+                data={data}
+                width={100}
+                height={50}
+              />
+              <Message>
+                <Result item={data.item}/>
+              </Message>
+            </div>
           )}
+
+        {result && result.length > 1 && <Comparision result={result}/>}
 
         {!result && !inProgress &&
           <Message>

@@ -117,6 +117,20 @@ export const createDataSet = items => {
         hoverBorderColor: 'rgba(255,99,132,1)',
         data: item.count
       }
-    ]
+    ],
+    item
   }))
 }
+
+export const parseParams = params => {
+  const [id, type] = params.split(':')
+  return { id, type }
+}
+
+export const getMax = arr => Math.max(...arr)
+
+export const getMin = arr => Math.min(...arr)
+
+export const getPersent = arr => parseInt(100 - (getMin(arr) / getMax(arr) * 100))
+
+export const getAverage = arr => parseInt(arr.reduce((a, b) => a + b, 0) / arr.length)

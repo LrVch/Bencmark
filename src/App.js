@@ -1,28 +1,44 @@
 import './line/line'
 
+import * as yup from 'yup'
+
 import React, { useState } from 'react';
+import { findLine, findLine2 } from './line/line'
 
 import Benchmark from './components/Benchmark/Benchmark'
 import { Container } from 'semantic-ui-react';
 import ControlPanel from './components/ControlPanel/ControlPanel'
-import { findLine } from './line/line'
+import { parseParams } from './components/Benchmark/utils';
 
-// const functionsOptions = [
-//   {
-//     fn: findLine,
-//     id: 'someUniqId-11',
-//     type: 'findLine',
-//     // initArgs: 'some initial args',
-//     // accept: [[0]],
-//     // acceptTemplate: 'number[]'
-//   }
-// ]
+const initialArguments = {
+  'findLine': [1, 2, 3]
+}
+
+const schemaValidators = {
+  'findLine': yup.array().of(yup.number().min(-100).max(100).integer())
+}
+
+const functionsOptions = {
+  'uniqe-id-1': {
+    fn: findLine,
+    name: findLine.sourceName,
+    id: 'uniqe-id-1',
+    type: 'findLine',
+  },
+  'uniqe-id-2': {
+    fn: findLine2,
+    name: findLine2.sourceName,
+    id: 'uniqe-id-2',
+    type: 'findLine',
+  }
+}
 
 /*
-  -history and filter
-  Switch between functions and pass options
-  Should be able to change arguments
-    - cheker of types
+  optimize function
+  - history and filter(with comparision result)
+  - add more functions and abillity to change 
+  - able to chose optional actions(get array etc. by type of function)
+  - 5% difference is OK
 */
 
 function App() {
@@ -33,16 +49,19 @@ function App() {
     iteration: 1,
     printToConsole: true,
     disabled: false,
-    initialArgs: [1, 2, 3]
+    initialArgs: initialArguments['findLine'],
+    functions: Object.keys(functionsOptions).map(id => functionsOptions[id]),
+    schemaValidator: schemaValidators['findLine']
   })
 
   const [appState, setAppState] = useState({
-    history: [],
+    // history: [],
     args: null,
-    validArgs: false
+    validArgs: false,
+    functions: []
   })
 
-  const { args, validArgs } = appState
+  const { args, validArgs, functions } = appState
 
   const { delay, inRow, loops, iteration, printToConsole } = panelState
 
@@ -88,6 +107,16 @@ function App() {
     }))
   }
 
+  const handleChangeFunctions = ids => {
+    ids = ids.map(parseParams)
+    const functions = ids.map(({ id }) => functionsOptions[id].fn)
+
+    setAppState(prevState => ({
+      ...prevState,
+      functions
+    }))
+  }
+
   return (
     <div>
       <br />
@@ -97,6 +126,7 @@ function App() {
           onChange={handleChangePanelState}
           state={panelState}
           onValidArgs={handleValidArgs}
+          onChangeFunctions={handleChangeFunctions}
         />
 
         <br />
@@ -104,10 +134,10 @@ function App() {
         <br />
 
         <Benchmark
-          disable={!validArgs}
+          disable={!validArgs || !functions.length}
           onStart={handleOnStart}
           onEnd={handleOnEnd}
-          functions={[findLine, findLine]}
+          functions={functions}
           args={[args]}
 
           printToConsole={printToConsole}
@@ -116,6 +146,8 @@ function App() {
           iteration={iteration}
           delay={delay}
         />
+
+        <br />
       </Container>
     </div>
   );
