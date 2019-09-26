@@ -74,14 +74,20 @@ const ControlPanel = ({
 
   const handleSymetricArrChange = length => {
     const args = getSymmetricArr(length).result
+    const {error, valid} = validate(schema, args)
     setArgsArra(args)
+    onValidArgs(valid)
     onArgsChange(args)
+    setArrayError(error)
   }
 
   const handleASymetricArrChange = length => {
     const args = getAsymmetricArr(length)
+    const {error, valid} = validate(schema, args)
     setArgsArra(args)
+    onValidArgs(valid)
     onArgsChange(args)
+    setArrayError(error)
   }
   useEffect(() => {
     const {error, valid} = validate(schema, argsArray)

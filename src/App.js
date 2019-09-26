@@ -1,26 +1,25 @@
 import './line/line'
 
 import React, { useState } from 'react';
-import { getAsymmetricArr, getSymmetricArr } from './line/utils'
 
 import Benchmark from './components/Benchmark/Benchmark'
 import { Container } from 'semantic-ui-react';
 import ControlPanel from './components/ControlPanel/ControlPanel'
 import { findLine } from './line/line'
 
-const functionsOptions = [
-  {
-    fn: findLine,
-    id: 'someUniqId-11',
-    type: 'findLine',
-    // initArgs: 'some initial args',
-    // accept: [[0]],
-    // acceptTemplate: 'number[]'
-  }
-]
+// const functionsOptions = [
+//   {
+//     fn: findLine,
+//     id: 'someUniqId-11',
+//     type: 'findLine',
+//     // initArgs: 'some initial args',
+//     // accept: [[0]],
+//     // acceptTemplate: 'number[]'
+//   }
+// ]
 
 /*
-  -history and filtr
+  -history and filter
   Switch between functions and pass options
   Should be able to change arguments
     - cheker of types
