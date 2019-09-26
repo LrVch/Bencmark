@@ -31,13 +31,15 @@ export function createItems(
       func: bench(functions[i], inRow, loops),
       time: 0,
       count: [],
+      date: [],
       results: [],
       serial: i,
       run: function (cb) {
         const { time, results } = this.func(args)
 
         this.time = time;
-        this.count.push(time);
+        this.count.push(time)
+        this.date.push(Date.now())
         this.results = results
         printToConsole && this.print();
         cb && cb({

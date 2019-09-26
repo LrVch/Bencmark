@@ -14,6 +14,7 @@ const Benchmark = ({
   iteration = 1,
   loops = 100,
   printToConsole = false,
+  disable,
   onStart = () => { },
   onEnd = () => { }
 } = {}) => {
@@ -50,7 +51,19 @@ const Benchmark = ({
   }
 
   const handleOnEnd = () => {
-    onEnd()
+    onEnd({
+      items: items.map(item => ({
+        ...item,
+        settings: {
+          args,
+          delay,
+          inRow,
+          iteration,
+          loops,
+          printToConsole
+        }
+      }))
+    })
     printToConsole && printDone(items)
     setState(prevState => {
       return {
@@ -106,7 +119,7 @@ const Benchmark = ({
 
         <Button
           loading={inProgress}
-          disabled={inProgress}
+          disabled={inProgress || disable}
           onClick={startBench}
         >Start</Button>
 
