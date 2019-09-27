@@ -2,16 +2,16 @@ import './line/line'
 
 import * as yup from 'yup'
 
+import { Container, Progress } from 'semantic-ui-react';
 import React, { useState } from 'react';
 import { findLine, findLine2 } from './line/line'
 
 import Benchmark from './components/Benchmark/Benchmark'
-import { Container } from 'semantic-ui-react';
 import ControlPanel from './components/ControlPanel/ControlPanel'
 import { parseParams } from './components/Benchmark/utils';
 
 const initialArguments = {
-  'findLine': [-33,-9,9,10,20,24,34,35,53,77]
+  'findLine': [-33, -9, 9, 10, 20, 24, 34, 35, 53, 77]
 }
 
 const schemaValidators = {
@@ -33,14 +33,6 @@ const functionsOptions = {
   }
 }
 
-/*
-  optimize function
-  - history and filter(with comparision result)
-  - add more functions and abillity to change 
-  - able to chose optional actions(get array etc. by type of function)
-  - 5% difference is OK
-*/
-
 function App() {
   const [panelState, setPanelState] = useState({
     delay: 500,
@@ -59,6 +51,11 @@ function App() {
     args: null,
     validArgs: false,
     functions: []
+  })
+
+  const [currentProgress, setCurrentProgress] = useState({
+    count: 0,
+    persent: 0
   })
 
   const { args, validArgs, functions } = appState
@@ -117,6 +114,8 @@ function App() {
     }))
   }
 
+  console.log('App rendered')
+
   return (
     <div>
       <br />
@@ -131,9 +130,12 @@ function App() {
 
         <br />
         <br />
+        {/* currentProgress.persent {Number((currentProgress.persent).toFixed(0))}
+        <Progress percent={Number((currentProgress.persent).toFixed(0))} progress /> */}
         <br />
 
         <Benchmark
+          onProgress={({ count, persent }) => { setCurrentProgress({ count: count + 1, persent }) }}
           disable={!validArgs || !functions.length}
           onStart={handleOnStart}
           onEnd={handleOnEnd}

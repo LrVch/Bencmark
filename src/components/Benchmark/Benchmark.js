@@ -22,20 +22,21 @@ const Benchmark = ({
   printToConsole = false,
   disable,
   onStart = () => { },
-  onEnd = () => { }
+  onEnd = () => { },
+  onProgress = () => {}
 } = {}) => {
 
-  const [currentProgress, setCurrentProgress] = useState({
-    count: 0,
-    persent: 0
-  })
+  // const [currentProgress, setCurrentProgress] = useState({
+  //   count: 0,
+  //   persent: 0
+  // })
 
-  const handleProgress = ({ amount, count, persent } = {}) => {
-    setCurrentProgress(_ => ({
-      count: count + 1,
-      persent: persent
-    }))
-  }
+  // const handleProgress = ({ amount, count, persent } = {}) => {
+  //   setCurrentProgress(_ => ({
+  //     count: count + 1,
+  //     persent: persent
+  //   }))
+  // }
 
   const [state, setState] = useState({
     inProgress: false,
@@ -75,7 +76,7 @@ const Benchmark = ({
     onEnd]
   )
 
-  const handleItarationEnd = useCallback(({ name, results, time }) => {
+  const handleIterationEnd = useCallback(({ name, results, time }) => {
     if (!printToConsole) {
       return
     }
@@ -94,18 +95,18 @@ const Benchmark = ({
         return handleOnEnd(data.items)
       }
       case 'iterationEnd': {
-        return handleItarationEnd(data)
+        return handleIterationEnd(data)
       }
       case 'progress': {
-        console.log('type', type)
-        console.log('data', data)
-        console.log('============================')
-        return handleProgress(data)
+        // console.log('type', type)
+        // console.log('data', data)
+        // console.log('============================')
+        return onProgress(data)
       }
       default:
         return null
     }
-  }, [handleItarationEnd, handleOnEnd])
+  }, [handleIterationEnd, handleOnEnd, onProgress])
 
   useEffect(() => {
     benchmarkWorker.addEventListener('message', hanleWorkerMessage)
@@ -140,10 +141,10 @@ const Benchmark = ({
 
   const startBench = () => {
     handleOnStart()
-    setCurrentProgress({
-      persent: 0,
-      count: 0
-    })
+    // setCurrentProgress({
+    //   persent: 0,
+    //   count: 0
+    // })
 
     benchmarkWorker.postMessage({
       type: 'start',
@@ -160,6 +161,8 @@ const Benchmark = ({
     })
   }
 
+  console.log('Benchmark rendered')
+
   return (
     <div>
       <div>
@@ -170,8 +173,6 @@ const Benchmark = ({
         >Start</Button>
         <br />
         <br/>
-        currentProgress.persent {currentProgress.persent}
-        {/* <Progress percent={Number((currentProgress.persent).toFixed(0))} progress /> */}
 
         {result &&
           result.map((data, i) =>

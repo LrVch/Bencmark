@@ -1,4 +1,5 @@
 export default () => {
+  console.log('worker created.')
   function bench(f, inRow, loops, onProgress) {
     return function () {
       const results = []
@@ -113,8 +114,6 @@ export default () => {
     // console.log('items', items)
 
     start(items)
-
-    console.log('iteration', iteration)
 
     if (iteration > 1) {
       iteration--;

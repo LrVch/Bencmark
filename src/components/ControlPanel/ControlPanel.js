@@ -1,7 +1,5 @@
-import * as yup from 'yup'
-
 import { Button, Checkbox, Dropdown, Form, Header, Input, Message } from 'semantic-ui-react'
-import React, { useEffect, useState } from 'react'
+import React, {memo, useEffect, useState} from 'react'
 import { getAsymmetricArr, getSymmetricArr } from '../../line/utils'
 
 const createFunOptions = funs =>
@@ -9,10 +7,7 @@ const createFunOptions = funs =>
     key: fn.id, text: fn.name, value: `${fn.id}:${fn.type}`
   }))
 
-// const schema = yup.array()
-//   .of(yup.number().min(-100).max(100).integer())
-
-const ControlPanel = ({
+const ControlPanel = memo(({
   state: {
     delay,
     inRow,
@@ -103,6 +98,9 @@ const ControlPanel = ({
     setArrayError(error)
     // eslint-disable-next-line
   }, [])
+
+  console.log('ControlPanel rendered');
+  
 
   return (
     <div>
@@ -225,6 +223,6 @@ const ControlPanel = ({
       </div>
     </div>
   )
-}
+})
 
 export default ControlPanel
