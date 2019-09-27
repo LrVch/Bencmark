@@ -77,7 +77,7 @@ function App() {
   const handleOnStart = () => {
     setPanelState(state => ({
       ...state,
-      disabled: true
+      // disabled: true
     }))
   }
 

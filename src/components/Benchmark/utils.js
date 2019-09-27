@@ -1,11 +1,19 @@
-export function bench(f, inRow, loops, onProgress) {
+export const getMax = arr => Math.max(...arr)
+
+export const getMin = arr => Math.min(...arr)
+
+export const getPersent = arr => parseInt(100 - (getMin(arr) / getMax(arr) * 100))
+
+export const getAverage = arr => parseInt(arr.reduce((a, b) => a + b, 0) / arr.length)
+
+export function bench(f, inRow, loops, /* onProgress */) {
   return function () {
     const results = []
     const start = Date.now();
 
     for (let i = 0; i < loops; i++) {
       for (let i = 0; i < inRow; i++) {
-        onProgress && onProgress()
+        // onProgress && onProgress()
         const result = f.apply(null, arguments[0]);
         results.push(result)
       }
@@ -24,13 +32,13 @@ export function createItems(
   loops,
   args,
   printToConsole = false,
-  onProgress
+  // onProgress
 ) {
   const items = []
   for (let i = 0; i < functions.length; i++) {
     items.push({
       name: functions[i].sourceName,
-      func: bench(functions[i], inRow, loops, onProgress),
+      func: bench(functions[i], inRow, loops),
       time: 0,
       count: [],
       date: [],
@@ -98,11 +106,24 @@ export const printStart = (inRow, loops, iteration) => {
   console.log('='.repeat(30))
 }
 
+export const printDoneItem = item => {
+  const max = getMax(item.count)
+  const min = getMin(item.count)
+  const persent = getPersent(item.count)
+  const average = getAverage(item.count)
+  console.log(item.name
+    + " = max time " + max
+    + " / mim time " + min
+    + " / average " + average
+    + " / persent " + persent
+  )
+}
+
 export const printDone = (items) => {
   console.log('='.repeat(30))
   console.log(`End Benchmark ${new Date().toLocaleString()}`);
   console.log('='.repeat(30))
-  items.forEach((item) => item.printDone());
+  items.forEach(printDoneItem);
 }
 
 export const createDataSet = items => {
@@ -128,10 +149,3 @@ export const parseParams = params => {
   return { id, type }
 }
 
-export const getMax = arr => Math.max(...arr)
-
-export const getMin = arr => Math.min(...arr)
-
-export const getPersent = arr => parseInt(100 - (getMin(arr) / getMax(arr) * 100))
-
-export const getAverage = arr => parseInt(arr.reduce((a, b) => a + b, 0) / arr.length)
