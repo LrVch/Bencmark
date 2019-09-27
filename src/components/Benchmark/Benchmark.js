@@ -1,6 +1,6 @@
 import './Benchmark.css'
 
-import { Button, Message } from 'semantic-ui-react'
+import { Button, Message, Progress } from 'semantic-ui-react'
 import React, { useEffect, useState } from 'react'
 import { createDataSet, createItems, printDone, printStart } from './utils'
 
@@ -21,10 +21,36 @@ const Benchmark = ({
   onEnd = () => { }
 } = {}) => {
 
+  const [currentProgress, setCurrentProgress] = useState({
+    count: 0,
+    percent: 0
+  })
+
+  const handleProgress = () => {
+    setTimeout(() => {
+      setCurrentProgress(prev => ({
+        count: prev.count + 1,
+        percent: ((prev.count + 1) / amount) * 100
+      }))
+    })
+  }
+
+  const items = createItems(
+    functions,
+    inRow,
+    loops,
+    args,
+    printToConsole,
+    handleProgress
+  )
+
   const [state, setState] = useState({
     inProgress: false,
     result: null
   })
+
+  const [currentIterations, setCurrentIterations] = useState(iteration)
+  const [amount, setAmount] = useState((loops * inRow * currentIterations * items.length))
 
   const { inProgress, result } = state
 
@@ -32,13 +58,13 @@ const Benchmark = ({
     result && console.log('result', result)
   }, [result])
 
-  const items = createItems(
-    functions,
-    inRow,
-    loops,
-    args,
-    printToConsole
-  )
+  useEffect(() => {
+    setCurrentIterations(iteration)
+  }, [iteration])
+
+  useEffect(() => {
+    setAmount(loops * inRow * currentIterations * items.length)
+  }, [loops, inRow, currentIterations, items.length])
 
   const handleOnStart = () => {
     onStart()
@@ -91,6 +117,10 @@ const Benchmark = ({
 
   const startBench = () => {
     handleOnStart()
+    setCurrentProgress({
+      percent: 0,
+      count: 0
+    })
 
     setTimeout(start, 0);
 
@@ -120,6 +150,8 @@ const Benchmark = ({
           disabled={inProgress || disable}
           onClick={startBench}
         >Start</Button>
+        <br/>
+        <Progress percent={Number((currentProgress.percent).toFixed(0))} progress />
 
         {result &&
           result.map((data, i) =>
@@ -130,12 +162,12 @@ const Benchmark = ({
                 height={50}
               />
               <Message>
-                <Result item={data.item}/>
+                <Result item={data.item} />
               </Message>
             </div>
           )}
 
-        {result && result.length > 1 && <Comparision result={result}/>}
+        {result && result.length > 1 && <Comparision result={result} />}
 
         {!result && !inProgress &&
           <Message>

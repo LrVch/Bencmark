@@ -1,10 +1,11 @@
-export function bench(f, inRow, loops) {
+export function bench(f, inRow, loops, onProgress) {
   return function () {
     const results = []
     const start = Date.now();
 
     for (let i = 0; i < loops; i++) {
       for (let i = 0; i < inRow; i++) {
+        onProgress && onProgress()
         const result = f.apply(null, arguments[0]);
         results.push(result)
       }
@@ -22,20 +23,20 @@ export function createItems(
   inRow,
   loops,
   args,
-  printToConsole = false
+  printToConsole = false,
+  onProgress
 ) {
   const items = []
   for (let i = 0; i < functions.length; i++) {
-    // console.log('fun',functions[i].sourceName )
     items.push({
       name: functions[i].sourceName,
-      func: bench(functions[i], inRow, loops),
+      func: bench(functions[i], inRow, loops, onProgress),
       time: 0,
       count: [],
       date: [],
       results: [],
       serial: i,
-      run: function (cb) {
+      run: function (done) {
         const { time, results } = this.func(args)
 
         this.time = time;
@@ -43,7 +44,7 @@ export function createItems(
         this.date.push(Date.now())
         this.results = results
         printToConsole && this.print();
-        cb && cb({
+        done && done({
           time,
           name: this.name,
           results

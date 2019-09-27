@@ -16,13 +16,13 @@ export const findLine = (arr = []) => {
   const oddElement = isOdd ? sorted[sliceLength] : null;
   const center = (rightSlice[0] - leftSlice[0]) / 2 + leftSlice[0];
   const isOddMatchCenter = oddElement === center;
-  
+
   const res = rightSlice
-  .map((elem, index) => {
-    return Math.abs(center - elem) === Math.abs(leftSlice[index] - center);
-  })
-  .every(elem => !!elem);
-  
+    .map((elem, index) => {
+      return Math.abs(center - elem) === Math.abs(leftSlice[index] - center);
+    })
+    .every(elem => !!elem);
+
   // console.log("leftSlice", leftSlice);
   // console.log("rightSlice", rightSlice);
   // console.log("oddElement", oddElement);
@@ -45,7 +45,18 @@ export const findLine = (arr = []) => {
 
 findLine.sourceName = 'findLine'
 
+/* 
+  Legend
+  1. sort arr
+  2. find if there is an odd element
+  3. devide in two parts
+  4. find center
+  5. find if an odd element matches center
+  6. compare elements in the left and the right array
+  7.  
+*/
 export const findLine2 = (arr = []) => {
+  // console.log("arr", arr);
   const sorted = arr.slice().sort((a, b) => a - b);
   const arrLength = sorted.length;
   const isOdd = arrLength % 2 !== 0;
@@ -56,13 +67,19 @@ export const findLine2 = (arr = []) => {
   const oddElement = isOdd ? sorted[sliceLength] : null;
   const center = (rightSlice[0] - leftSlice[0]) / 2 + leftSlice[0];
   const isOddMatchCenter = oddElement === center;
-  
-  const res = rightSlice
-  .map((elem, index) => {
-    return Math.abs(center - elem) === Math.abs(leftSlice[index] - center);
-  })
-  .every(elem => !!elem);
-  
+
+  const res = !rightSlice
+    .some((elem, index) => {
+      return Math.abs(center - elem) !== Math.abs(leftSlice[index] - center);
+    });
+
+  // const res = rightSlice
+  // .map((elem, index) => {
+  //   return Math.abs(center - elem) === Math.abs(leftSlice[index] - center);
+  // })
+  // .every(elem => !!elem);
+
+
   // console.log("leftSlice", leftSlice);
   // console.log("rightSlice", rightSlice);
   // console.log("oddElement", oddElement);
@@ -85,7 +102,7 @@ export const findLine2 = (arr = []) => {
 
 findLine2.sourceName = 'findLine2'
 
-// console.log(findLine([-6, 0, 4, 8, 14]));
+// console.log(findLine2([-6, 0, 4, 8, 14]));
 // console.log(findLine([1, 2, 4]));
 // console.log(findLine([-2, 7, 16]));
 

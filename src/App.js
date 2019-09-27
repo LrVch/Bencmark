@@ -11,7 +11,7 @@ import ControlPanel from './components/ControlPanel/ControlPanel'
 import { parseParams } from './components/Benchmark/utils';
 
 const initialArguments = {
-  'findLine': [1, 2, 3]
+  'findLine': [-33,-9,9,10,20,24,34,35,53,77]
 }
 
 const schemaValidators = {
@@ -46,7 +46,7 @@ function App() {
     delay: 500,
     inRow: 1000,
     loops: 100,
-    iteration: 1,
+    iteration: 10,
     printToConsole: true,
     disabled: false,
     initialArgs: initialArguments['findLine'],

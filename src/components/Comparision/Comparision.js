@@ -10,11 +10,11 @@ const setLevelMark = (items, best, {
     normal: 3,
     warn: 10,
   }) => {
-  console.log('best', best)
+  // console.log('best', best)
   return items.map(item => {
     const { average } = item
     const percent = getPersent([average, best])
-    console.log('percent', percent)
+    // console.log('percent', percent)
     const mark = average === best ? 'green' :
       (average > best && percent <= normal) ? 'olive' :
         (percent > normal && percent <= warn) ? 'yellow' : 'red'
