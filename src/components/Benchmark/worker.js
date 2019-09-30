@@ -1,14 +1,14 @@
 export default () => {
   console.log('worker created.')
   function bench(f, inRow, loops, onProgress) {
-    return function () {
+    return function bench() {
       const results = []
-      const start = Date.now();
+      const start = Date.now()
 
       for (let i = 0; i < loops; i++) {
+        onProgress && onProgress()
         for (let i = 0; i < inRow; i++) {
-          onProgress && onProgress()
-          const result = f.apply(null, arguments[0]);
+          const result = f.apply(null, arguments)
           results.push(result)
         }
       }
@@ -83,6 +83,7 @@ export default () => {
     functions = functions.map(recreateFnFromString);
     const intialIteraions = iteration
     let count = 0
+    const amount =  loops * intialIteraions * functions.length
 
     const items = createItems(
       functions,
@@ -90,7 +91,6 @@ export default () => {
       loops,
       args,
       () => {
-        const amount =  loops * inRow * intialIteraions * functions.length
         // eslint-disable-next-line no-restricted-globals
         self.postMessage({
           type: 'progress',
@@ -113,33 +113,35 @@ export default () => {
     
     // console.log('items', items)
 
-    start(items)
+    setTimeout(start.bind(null, items), 0);
 
-    if (iteration > 1) {
-      iteration--;
-      setTimeout(function time() {
-        start(items);
+    setTimeout(() => {
+      if (iteration > 1) {
         iteration--;
-        if (iteration > 0) {
-          setTimeout(time, delay)
-        } else {
-          // eslint-disable-next-line no-restricted-globals
-          self.postMessage({
-            type: 'end',
-            data: {
-              items: mapResult(items)
-            }
-          })
-        }
-      }, delay);
-    } else {
-      // eslint-disable-next-line no-restricted-globals
-      self.postMessage({
-        type: 'end',
-        data: {
-          items: mapResult(items)
-        }
-      })
-    }
+        setTimeout(function time() {
+          start(items);
+          iteration--;
+          if (iteration > 0) {
+            setTimeout(time, delay)
+          } else {
+            // eslint-disable-next-line no-restricted-globals
+            self.postMessage({
+              type: 'end',
+              data: {
+                items: mapResult(items)
+              }
+            })
+          }
+        }, delay);
+      } else {
+        // eslint-disable-next-line no-restricted-globals
+        self.postMessage({
+          type: 'end',
+          data: {
+            items: mapResult(items)
+          }
+        })
+      }
+    }, 100)
   })
 }

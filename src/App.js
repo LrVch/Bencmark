@@ -3,12 +3,12 @@ import './line/line'
 import * as yup from 'yup'
 
 import { Container, Progress } from 'semantic-ui-react';
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { findLine, findLine2 } from './line/line'
 
 import Benchmark from './components/Benchmark/Benchmark'
 import ControlPanel from './components/ControlPanel/ControlPanel'
-import { parseParams } from './components/Benchmark/utils';
+import { parseParams } from './components/Benchmark/utils'
 
 const initialArguments = {
   'findLine': [-33, -9, 9, 10, 20, 24, 34, 35, 53, 77]
@@ -42,69 +42,59 @@ function App() {
     printToConsole: true,
     disabled: false,
     initialArgs: initialArguments['findLine'],
-    functions: Object.keys(functionsOptions).map(id => functionsOptions[id]),
+    functions:  useMemo(() => Object.keys(functionsOptions).map(id => functionsOptions[id]), []),
+    // functions: Object.keys(functionsOptions).map(id => functionsOptions[id]),
     schemaValidator: schemaValidators['findLine']
   })
 
   const [appState, setAppState] = useState({
-    // history: [],
     args: null,
     validArgs: false,
     functions: []
-  })
-
-  const [currentProgress, setCurrentProgress] = useState({
-    count: 0,
-    persent: 0
   })
 
   const { args, validArgs, functions } = appState
 
   const { delay, inRow, loops, iteration, printToConsole } = panelState
 
-  const handleChangePanelState = (name, value) => {
+  const handleChangePanelState = useCallback((name, value) => {
     setPanelState(state => {
       return {
         ...state,
         [name]: value
       }
     })
-  }
+  }, [])
 
-  const handleOnStart = () => {
+  const handleOnStart = useCallback(() => {
     setPanelState(state => ({
       ...state,
       // disabled: true
     }))
-  }
+  }, [])
 
-  const handleOnEnd = (data) => {
+  const handleOnEnd = useCallback((data) => {
     setPanelState(state => ({
       ...state,
       disabled: false
     }))
+  }, [])
 
-    // setAppState(state => ({
-    //   ...state,
-    //   history: [...state.history, ...data.items]
-    // }))
-  }
-
-  const handleArgsChange = (args) => {
+  const handleArgsChange = useCallback((args) => {
     setAppState(state => ({
       ...state,
       args
     }))
-  }
+  }, [])
 
-  const handleValidArgs = value => {
+  const handleValidArgs = useCallback((value) => {
     setAppState(state => ({
       ...state,
       validArgs: value
     }))
-  }
+  }, [])
 
-  const handleChangeFunctions = ids => {
+  const handleChangeFunctions = useCallback((ids) => {
     ids = ids.map(parseParams)
     const functions = ids.map(({ id }) => functionsOptions[id].fn)
 
@@ -112,7 +102,7 @@ function App() {
       ...prevState,
       functions
     }))
-  }
+  }, [])
 
   console.log('App rendered')
 
@@ -130,17 +120,14 @@ function App() {
 
         <br />
         <br />
-        {/* currentProgress.persent {Number((currentProgress.persent).toFixed(0))}
-        <Progress percent={Number((currentProgress.persent).toFixed(0))} progress /> */}
         <br />
 
         <Benchmark
-          onProgress={({ count, persent }) => { setCurrentProgress({ count: count + 1, persent }) }}
           disable={!validArgs || !functions.length}
           onStart={handleOnStart}
           onEnd={handleOnEnd}
           functions={functions}
-          args={[args]}
+          args={args}
 
           printToConsole={printToConsole}
           loops={loops}

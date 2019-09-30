@@ -1,7 +1,7 @@
 import './Benchmark.css'
 
 import { Button, Message, Progress } from 'semantic-ui-react'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { memo, useCallback, useEffect, useState } from 'react'
 import { createDataSet, printDone, printStart } from './utils'
 
 import { Bar } from 'react-chartjs-2'
@@ -12,7 +12,7 @@ import worker from './worker'
 
 const benchmarkWorker = new WebWorker(worker);
 
-const Benchmark = ({
+const Benchmark = memo(({
   args,
   delay = 500,
   functions,
@@ -23,20 +23,13 @@ const Benchmark = ({
   disable,
   onStart = () => { },
   onEnd = () => { },
-  onProgress = () => {}
 } = {}) => {
 
-  // const [currentProgress, setCurrentProgress] = useState({
-  //   count: 0,
-  //   persent: 0
-  // })
+  const [currentProgress, setCurrentProgress] = useState(0)
 
-  // const handleProgress = ({ amount, count, persent } = {}) => {
-  //   setCurrentProgress(_ => ({
-  //     count: count + 1,
-  //     persent: persent
-  //   }))
-  // }
+  const handleProgress = useCallback(({persent } = {}) => {
+    setCurrentProgress(persent)
+  }, [])
 
   const [state, setState] = useState({
     inProgress: false,
@@ -85,35 +78,28 @@ const Benchmark = ({
     console.log('- - '.repeat(15))
   }, [printToConsole])
 
-  const hanleWorkerMessage = useCallback(({ data: { type, data } }) => {
-    // console.log('type', type);
-    // console.log('data', data);
-    // console.log('============================');
-
+  const handleWorkerMessage = useCallback(({ data: { type, data } }) => {
     switch (type) {
+      case 'progress': {
+        return handleProgress(data)
+      }
       case 'end': {
         return handleOnEnd(data.items)
       }
       case 'iterationEnd': {
         return handleIterationEnd(data)
       }
-      case 'progress': {
-        // console.log('type', type)
-        // console.log('data', data)
-        // console.log('============================')
-        return onProgress(data)
-      }
       default:
         return null
     }
-  }, [handleIterationEnd, handleOnEnd, onProgress])
+  }, [handleIterationEnd, handleOnEnd, handleProgress])
 
   useEffect(() => {
-    benchmarkWorker.addEventListener('message', hanleWorkerMessage)
+    benchmarkWorker.addEventListener('message', handleWorkerMessage)
     return () => {
-      benchmarkWorker.removeEventListener('message', hanleWorkerMessage)
+      benchmarkWorker.removeEventListener('message', handleWorkerMessage)
     }
-  }, [hanleWorkerMessage])
+  }, [handleWorkerMessage])
 
   useEffect(() => {
     result && console.log('result', result)
@@ -141,10 +127,6 @@ const Benchmark = ({
 
   const startBench = () => {
     handleOnStart()
-    // setCurrentProgress({
-    //   persent: 0,
-    //   count: 0
-    // })
 
     benchmarkWorker.postMessage({
       type: 'start',
@@ -172,7 +154,9 @@ const Benchmark = ({
           onClick={startBench}
         >Start</Button>
         <br />
-        <br/>
+        <br />
+        currentProgress.persent {Number((currentProgress).toFixed(0))}
+        <Progress percent={Number((currentProgress).toFixed(0))} progress />
 
         {result &&
           result.map((data, i) =>
@@ -199,6 +183,6 @@ const Benchmark = ({
       </div>
     </div>
   )
-}
+})
 
 export default Benchmark
