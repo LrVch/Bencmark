@@ -27,7 +27,8 @@ const Benchmark = memo(({
 
   const [currentProgress, setCurrentProgress] = useState(0)
 
-  const handleProgress = useCallback(({persent } = {}) => {
+  const handleProgress = useCallback(({ persent } = {}) => {
+    // console.log('render progress ', persent)
     setCurrentProgress(persent)
   }, [])
 
@@ -143,7 +144,7 @@ const Benchmark = memo(({
     })
   }
 
-  console.log('Benchmark rendered')
+  // console.log('Benchmark rendered')
 
   return (
     <div>
@@ -155,8 +156,7 @@ const Benchmark = memo(({
         >Start</Button>
         <br />
         <br />
-        currentProgress.persent {Number((currentProgress).toFixed(0))}
-        <Progress percent={Number((currentProgress).toFixed(0))} progress />
+        <Progress percent={currentProgress} progress />
 
         {result &&
           result.map((data, i) =>

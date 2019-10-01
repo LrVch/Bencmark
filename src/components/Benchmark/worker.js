@@ -83,7 +83,9 @@ export default () => {
     functions = functions.map(recreateFnFromString);
     const intialIteraions = iteration
     let count = 0
+    let tempCount = 0
     const amount =  loops * intialIteraions * functions.length
+
 
     const items = createItems(
       functions,
@@ -91,13 +93,24 @@ export default () => {
       loops,
       args,
       () => {
+        count++
+        const persent = ((count) / amount * 100).toFixed(0)
+
+        if (persent !== tempCount) {
+          tempCount = persent
+        } else {
+          return
+        }
+        // console.log('count', count);
+        
+        // console.log('persent', persent)
         // eslint-disable-next-line no-restricted-globals
         self.postMessage({
           type: 'progress',
           data: {
-            amount: amount,
-            count: count++,
-            persent: (count) / amount * 100
+            amount,
+            count,
+            persent
           }
         })
       },
